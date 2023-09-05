@@ -6,5 +6,5 @@ def index(request):  # HttpRequest
     return HttpResponse('Страница приложения')
 
 
-def categories(request):
-    return HttpResponse('<h1>Статьи по категориям</h1>')
+def categories(request, cat_id):
+    return HttpResponse(f'<h1>Статьи по категориям</h1><p>id: {cat_id}</p>')
