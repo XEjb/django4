@@ -5,8 +5,13 @@ from django.template.loader import render_to_string
 
 
 def index(request):  # HttpRequest
-    t = render_to_string('index.html')
-    return HttpResponse(t)
+    # t = render_to_string('automation/index.html')
+    # return HttpResponse(t)
+    return render(request, 'automation/index.html')
+
+
+def about(request):
+    return render(request, 'automation/about.html')
 
 
 def categories(request, cat_id):
@@ -21,7 +26,7 @@ def categories_by_slug(request, cat_slug):
 
 def archive(request, year):
     if year > 2023:
-        uri = reverse('cats', args=('music', ))
+        uri = reverse('cats', args=('music',))
         return HttpResponseRedirect(uri)
 
     return HttpResponse(f'<h1>Архив по годам</h1><p>{year}</p>')
