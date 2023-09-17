@@ -6,25 +6,19 @@ from django.template.defaultfilters import slugify
 
 menu = ["О сайте", "Добавить статью", "Обратная связь", "Войти"]
 
+data_db = [
+    {'id': 1, 'title': 'Первый', 'content': 'Биография 1', 'is_published': True},
+    {'id': 2, 'title': 'Второй', 'content': 'Биография 2', 'is_published': False},
+    {'id': 3, 'title': 'Третий', 'content': 'Биография 3', 'is_published': True},
+]
 
-class MyClass:
-    def __init__(self, a, b):
-        self.a = a
-        self.b = b
 
-
-def index(request):  # HttpRequest
-    # t = render_to_string('automation/index.html')
-    # return HttpResponse(t)
-    data = {'title': 'главная страница',
-            'menu': menu,
-            'float': 28.56,
-            'lst': [1, 2, 'abc', True],
-            'set': {1, 2, 3, 2, 5},
-            'dict': {'key_1': 'value_1', 'key_2': 'value_2'},
-            'obj': MyClass(10, 20),
-            'url': slugify("The main page"),
-            }
+def index(request):
+    data = {
+        'title': 'Главная страница',
+        'menu': menu,
+        'posts': data_db,
+    }
     return render(request, 'automation/index.html', context=data)
 
 
