@@ -16,12 +16,19 @@ data_db = [
     {'id': 3, 'title': 'Третий', 'content': 'Биография 3', 'is_published': True},
 ]
 
+cats_db = [
+    {'id': 1, 'name': 'low'},
+    {'id': 2, 'name': 'medium'},
+    {'id': 3, 'name': 'hard'},
+]
+
 
 def index(request):
     data = {
         'title': 'Главная страница',
         'menu': menu,
         'posts': data_db,
+        'cat_selected': 0,
     }
     return render(request, 'automation/index.html', context=data)
 
@@ -44,6 +51,16 @@ def contact(request):
 
 def login(request):
     return HttpResponse('Авторизация')
+
+
+def show_category(request, cat_id):
+    data = {
+        'title': 'Отображение по рубрикам',
+        'menu': menu,
+        'posts': data_db,
+        'cat_selected': cat_id,
+    }
+    return render(request, 'automation/index.html', context=data)
 
 
 def page_not_found(request, exception):
