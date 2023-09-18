@@ -1,18 +1,9 @@
-<!DOCTYPE html>
-<head>
-    <meta charset="UTF-8">
-    <title>{{ title }}</title>
-</head>
-<body>
-<ul>
-    <li><a href="{% url 'home' %}">Главная страница</a></li>
-    {% for m in menu %}
-    {% if not forloop.last %}<li>{% else %}<li class="last">{% endif %}
-        <a href="{% url m.url_name %}">{{ m.title }}</a>
-    </li>
-    {% endfor %}
-</ul>
+{% extends 'base.html' %}
+
+{% block content %}
 <h1>{{ title }}</h1>
+
+{% include 'automation/includes/nav.html' %}
 
 <ul>
     {% for p in posts %}
@@ -28,5 +19,7 @@
     {% endif %}
     {% endfor %}
 </ul>
-</body>
-</html>
+
+{% include 'automation/includes/nav.html' only %}
+
+{% endblock %}
