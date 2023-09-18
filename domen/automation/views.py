@@ -2,29 +2,65 @@ from django.http import HttpResponse, HttpResponseNotFound, Http404, HttpRespons
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.template.loader import render_to_string
+from django.template.defaultfilters import slugify
+
+menu = [{'title': 'О сайте', 'url_name': 'about'},
+        {'title': 'Добавить статью', 'url_name': 'add_page'},
+        {'title': 'Обратная связь', 'url_name': 'contact'},
+        {'title': 'Войти', 'url_name': 'login'}
+        ]
+
+data_db = [
+    {'id': 1, 'title': 'Первый', 'content': 'Биография 1', 'is_published': True},
+    {'id': 2, 'title': 'Второй', 'content': 'Биография 2', 'is_published': False},
+    {'id': 3, 'title': 'Третий', 'content': 'Биография 3', 'is_published': True},
+]
+
+cats_db = [
+    {'id': 1, 'name': 'low'},
+    {'id': 2, 'name': 'medium'},
+    {'id': 3, 'name': 'hard'},
+]
 
 
-def index(request):  # HttpRequest
-    t = render_to_string('index.html')
-    return HttpResponse(t)
+def index(request):
+    data = {
+        'title': 'Главная страница',
+        'menu': menu,
+        'posts': data_db,
+        'cat_selected': 0,
+    }
+    return render(request, 'automation/index.html', context=data)
 
 
-def categories(request, cat_id):
-    return HttpResponse(f'<h1>Статьи по категориям</h1><p>id: {cat_id}</p>')
+def about(request):
+    return render(request, 'automation/about.html', {'title': 'О сайте', 'menu': menu})
 
 
-def categories_by_slug(request, cat_slug):
-    if request.POST:
-        print(request.POST)
-    return HttpResponse(f'<h1>Статьи по категориям</h1><p>slug: {cat_slug}</p>')
+def show_post(request, post_id):
+    return HttpResponse(f'Отображение статьи с id = {post_id}')
 
 
-def archive(request, year):
-    if year > 2023:
-        uri = reverse('cats', args=('music', ))
-        return HttpResponseRedirect(uri)
+def addpage(request):
+    return HttpResponse('Добавление статьи')
 
-    return HttpResponse(f'<h1>Архив по годам</h1><p>{year}</p>')
+
+def contact(request):
+    return HttpResponse('Обратная связь')
+
+
+def login(request):
+    return HttpResponse('Авторизация')
+
+
+def show_category(request, cat_id):
+    data = {
+        'title': 'Отображение по рубрикам',
+        'menu': menu,
+        'posts': data_db,
+        'cat_selected': cat_id,
+    }
+    return render(request, 'automation/index.html', context=data)
 
 
 def page_not_found(request, exception):
