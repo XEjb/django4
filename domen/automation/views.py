@@ -13,20 +13,20 @@ menu = [{'title': 'О сайте', 'url_name': 'about'},
         ]
 
 data_db = [
-    {'id': 1, 'title': 'Первый', 'content': 'Биография 1', 'is_published': True},
-    {'id': 2, 'title': 'Второй', 'content': 'Биография 2', 'is_published': False},
-    {'id': 3, 'title': 'Третий', 'content': 'Биография 3', 'is_published': True},
+    {'id': 1, 'title': 'Первый', 'content': 'one', 'is_published': True},
+    {'id': 2, 'title': 'Второй', 'content': 'two 2', 'is_published': False},
+    {'id': 3, 'title': 'Третий', 'content': 'three', 'is_published': True},
 ]
 
 cats_db = [
-    {'id': 1, 'name': 'avg'},
-    {'id': 2, 'name': 'semi-pro'},
-    {'id': 3, 'name': 'pro'},
+    {'id': 1, 'name': 'one'},
+    {'id': 2, 'name': 'two'},
+    {'id': 3, 'name': 'three'},
 ]
 
 
 def index(request):
-    posts = Automation.objects.filter(is_published=1)
+    posts = Automation.published.all()
 
     data = {
         'title': 'Главная страница',
