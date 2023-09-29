@@ -1,15 +1,11 @@
 from django import template
 import automation.views as views
+from ..models import Category
 
 register = template.Library()
 
 
-@register.simple_tag(name='getcats')
-def get_categories():
-    return views.cats_db
-
-
 @register.inclusion_tag('automation/list_categories.html')
 def show_categories(cat_selected=0):
-    cats = views.cats_db
+    cats = Category.objects.all()
     return {'cats': cats, 'cat_selected': cat_selected}

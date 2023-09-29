@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 
-from .models import Automation
+from .models import Automation, Category
 
 menu = [{'title': 'О сайте', 'url_name': 'about'},
         {'title': 'Добавить статью', 'url_name': 'add_page'},
@@ -16,12 +16,6 @@ data_db = [
     {'id': 1, 'title': 'Первый', 'content': 'one', 'is_published': True},
     {'id': 2, 'title': 'Второй', 'content': 'two 2', 'is_published': False},
     {'id': 3, 'title': 'Третий', 'content': 'three', 'is_published': True},
-]
-
-cats_db = [
-    {'id': 1, 'name': 'one'},
-    {'id': 2, 'name': 'two'},
-    {'id': 3, 'name': 'three'},
 ]
 
 
@@ -66,12 +60,15 @@ def login(request):
     return HttpResponse('Авторизация')
 
 
-def show_category(request, cat_id):
+def show_category(request, cat_slug):
+    category = get_object_or_404(Category, slug=cat_slug)
+    posts = Automation.published.filter(cat_id=category.pk)
+
     data = {
-        'title': 'Отображение по рубрикам',
+        'title': f'Рубрика: {category.name}',
         'menu': menu,
-        'posts': data_db,
-        'cat_selected': cat_id,
+        'posts': posts,
+        'cat_selected': category.pk,
     }
     return render(request, 'automation/index.html', context=data)
 
