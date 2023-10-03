@@ -12,15 +12,9 @@ menu = [{'title': 'О сайте', 'url_name': 'about'},
         {'title': 'Войти', 'url_name': 'login'}
         ]
 
-data_db = [
-    {'id': 1, 'title': 'Первый', 'content': 'one', 'is_published': True},
-    {'id': 2, 'title': 'Второй', 'content': 'two 2', 'is_published': False},
-    {'id': 3, 'title': 'Третий', 'content': 'three', 'is_published': True},
-]
-
 
 def index(request):
-    posts = Automation.published.all()
+    posts = Automation.published.all().select_related('cat')
 
     data = {
         'title': 'Главная страница',
@@ -62,7 +56,7 @@ def login(request):
 
 def show_category(request, cat_slug):
     category = get_object_or_404(Category, slug=cat_slug)
-    posts = Automation.published.filter(cat_id=category.pk)
+    posts = Automation.published.filter(cat_id=category.pk).select_related('cat')
 
     data = {
         'title': f'Рубрика: {category.name}',
@@ -79,7 +73,7 @@ def page_not_found(request, exception):
 
 def show_tag_postlist(request, tag_slug):
     tag = get_object_or_404(TagPost, slug=tag_slug)
-    posts = tag.tags.filter(is_published=Automation.Status.PUBLISHED)
+    posts = tag.tags.filter(is_published=Automation.Status.PUBLISHED).select_related('cat')
 
     data = {
         'title': f'Teg: {tag.tag}',
