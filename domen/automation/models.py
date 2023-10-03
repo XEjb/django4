@@ -29,6 +29,8 @@ class Automation(models.Model):
         return self.title
 
     class Meta:
+        verbose_name = 'ix'
+        verbose_name_plural = 'ix'
         ordering = ['-time_create']
         indexes = [
             models.Index(fields=['-time_create'])
