@@ -3,7 +3,7 @@ from .models import Automation, Category
 
 
 class CssFilter(admin.SimpleListFilter):
-    title = 'Статус ра'
+    title = 'Статус s'
     parameter_name = 'status'
 
     def lookups(self, request, model_admin):
