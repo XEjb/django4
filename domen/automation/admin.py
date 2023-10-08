@@ -1,4 +1,6 @@
 from django.contrib import admin, messages
+from django.utils.safestring import mark_safe
+
 from .models import Automation, Category
 
 
@@ -21,12 +23,12 @@ class CssFilter(admin.SimpleListFilter):
 
 @admin.register(Automation)
 class AutomationAdmin(admin.ModelAdmin):
-    fields = ['title', 'content', 'slug', 'cat', 'husband', 'tags']
+    fields = ['title', 'slug', 'content', 'photo', 'post_photo', 'cat', 'husband', 'tags']
     # exclude = ['tags', 'is_published']
-    # readonly_fields = ['slug']
-    prepopulated_fields = {'slug': ('title', )}
+    readonly_fields = ['post_photo']
+    prepopulated_fields = {'slug': ('title',)}
     filter_horizontal = ['tags']
-    list_display = ('title', 'time_create', 'is_published', 'cat', 'brief_info')
+    list_display = ('title', 'post_photo', 'time_create', 'is_published', 'cat')
     list_display_links = ('title',)
     ordering = ['time_create', 'title']
     list_editable = ('is_published',)
@@ -34,10 +36,13 @@ class AutomationAdmin(admin.ModelAdmin):
     actions = ['set_published', 'set_draft']
     search_fields = ['title__startswith', 'cat__name']
     list_filter = [CssFilter, 'cat__name', 'is_published']
+    save_on_top = True
 
-    @admin.display(description='Краткое описание', ordering='content')
-    def brief_info(self, automation: Automation):
-        return f"Описание {len(automation.content)} символов."
+    @admin.display(description='Изображение', ordering='content')
+    def post_photo(self, automation: Automation):
+        if automation.photo:
+            return mark_safe(f"<img src='{automation.photo.url}' width=50>")
+        return 'Без фото'
 
     @admin.action(description='Опубликовать')
     def set_published(self, request, queryset):
