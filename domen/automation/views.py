@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.views import View
-from django.views.generic import TemplateView, ListView
+from django.views.generic import TemplateView, ListView, DetailView
 
 from .forms import AddPostForm, UploadFileForm
 from .models import Automation, Category, TagPost, UploadFiles
@@ -76,17 +76,33 @@ def about(request):
                   {'title': 'О сайте', 'menu': menu, 'form': form})
 
 
-def show_post(request, post_slug):
-    post = get_object_or_404(Automation, slug=post_slug)
+# def show_post(request, post_slug):
+#     post = get_object_or_404(Automation, slug=post_slug)
+#
+#     data = {
+#         'title': post.title,
+#         'menu': menu,
+#         'posts': post,
+#         'cat_selected': 1,
+#     }
+#
+#     return render(request, 'automation/post.html', data)
 
-    data = {
-        'title': post.title,
-        'menu': menu,
-        'posts': post,
-        'cat_selected': 1,
-    }
 
-    return render(request, 'automation/post.html', data)
+class ShowPost(DetailView):
+    # model = Automation
+    template_name = 'automation/post.html'
+    slug_url_kwarg = 'post_slug'
+    context_object_name = 'post'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = context['post'].title
+        context['menu'] = menu
+        return context
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Automation.published, slug = self.kwargs[self.slug_url_kwarg])
 
 
 # def addpage(request):
@@ -178,15 +194,32 @@ def page_not_found(request, exception):
     return HttpResponseNotFound('<h1>Страница не найдена 404</h1>')
 
 
-def show_tag_postlist(request, tag_slug):
-    tag = get_object_or_404(TagPost, slug=tag_slug)
-    posts = tag.tags.filter(is_published=Automation.Status.PUBLISHED).select_related('cat')
+# def show_tag_postlist(request, tag_slug):
+#     tag = get_object_or_404(TagPost, slug=tag_slug)
+#     posts = tag.tags.filter(is_published=Automation.Status.PUBLISHED).select_related('cat')
+#
+#     data = {
+#         'title': f'Teg: {tag.tag}',
+#         'menu': menu,
+#         'posts': posts,
+#         'cat_selected': None,
+#     }
+#
+#     return render(request, 'automation/index.html', context=data)
 
-    data = {
-        'title': f'Teg: {tag.tag}',
-        'menu': menu,
-        'posts': posts,
-        'cat_selected': None,
-    }
 
-    return render(request, 'automation/index.html', context=data)
+class TagPostList(ListView):
+    template_name = 'automation/index.html'
+    context_object_name = 'posts'
+    allow_empty = False
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tag = TagPost.objects.get(slug=self.kwargs['tag_slug'])
+        context['title'] = 'Тег: ' + tag.tag
+        context['menu'] = menu
+        context['cat_selected'] = None
+        return context
+
+    def get_queryset(self):
+        return Automation.published.filter(tags__slug=self.kwargs['tag_slug']).select_related('cat')
