@@ -1,5 +1,5 @@
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseNotFound, Http404, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
@@ -49,10 +49,11 @@ class ShowPost(DataMixin, DetailView):
         return get_object_or_404(Automation.published, slug=self.kwargs[self.slug_url_kwarg])
 
 
-class AddPage(LoginRequiredMixin, DataMixin, CreateView):
+class AddPage(PermissionRequiredMixin, LoginRequiredMixin, DataMixin, CreateView):
     form_class = AddPostForm
     template_name = 'automation/addpage.html'
     title_page = 'Добавление статьи'
+    permission_required = 'automation.add_automation'
 
     def form_valid(self, form):
         w = form.save(commit=False)
@@ -60,14 +61,16 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
         return super().form_valid(form)
 
 
-class UpdatePage(DataMixin, UpdateView):
+class UpdatePage(PermissionRequiredMixin, DataMixin, UpdateView):
     model = Automation
     fields = ['title', 'content', 'photo', 'is_published', 'cat']
     template_name = 'automation/addpage.html'
     success_url = reverse_lazy('home')
     title_page = 'Редактирование статьи'
+    permission_required = 'automation.change_automation'
 
 
+@permission_required(perm='automation.add_automation', raise_exception=True)
 def contact(request):
     return HttpResponse('Обратная связь')
 
