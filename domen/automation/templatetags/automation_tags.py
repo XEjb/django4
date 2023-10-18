@@ -2,9 +2,15 @@ from django import template
 from django.db.models import Count
 
 import automation.views as views
+from automation.utils import menu
 from ..models import Category, TagPost
 
 register = template.Library()
+
+
+@register.simple_tag
+def get_menu():
+    return menu
 
 
 @register.inclusion_tag('automation/list_categories.html')
