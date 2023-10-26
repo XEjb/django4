@@ -8,6 +8,7 @@ from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.views import View
 from django.views.generic import TemplateView, ListView, DetailView, FormView, CreateView, UpdateView
+from django.core.cache import cache
 
 from .utils import DataMixin
 from .forms import AddPostForm, UploadFileForm, ContactForm
@@ -21,7 +22,12 @@ class AutomationHome(DataMixin, ListView):
     cat_selected = 0
 
     def get_queryset(self):
-        return Automation.published.all().select_related('cat')
+        w_list = cache.get('automation_posts')
+        if not w_list:
+            w_list = Automation.published.all().select_related('cat')
+            cache.set('automation_posts', w_list, 60)
+
+        return w_list
 
 
 @login_required
