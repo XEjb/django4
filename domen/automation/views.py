@@ -8,9 +8,10 @@ from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.views import View
 from django.views.generic import TemplateView, ListView, DetailView, FormView, CreateView, UpdateView
+from django.core.cache import cache
 
 from .utils import DataMixin
-from .forms import AddPostForm, UploadFileForm
+from .forms import AddPostForm, UploadFileForm, ContactForm
 from .models import Automation, Category, TagPost, UploadFiles
 
 
@@ -21,7 +22,12 @@ class AutomationHome(DataMixin, ListView):
     cat_selected = 0
 
     def get_queryset(self):
-        return Automation.published.all().select_related('cat')
+        w_list = cache.get('automation_posts')
+        if not w_list:
+            w_list = Automation.published.all().select_related('cat')
+            cache.set('automation_posts', w_list, 60)
+
+        return w_list
 
 
 @login_required
@@ -70,9 +76,15 @@ class UpdatePage(PermissionRequiredMixin, DataMixin, UpdateView):
     permission_required = 'automation.change_automation'
 
 
-@permission_required(perm='automation.add_automation', raise_exception=True)
-def contact(request):
-    return HttpResponse('Обратная связь')
+class ContactFormView(LoginRequiredMixin, DataMixin, FormView):
+    form_class = ContactForm
+    template_name = 'automation/contact.html'
+    success_url = reverse_lazy('home')
+    title_page = 'обратная связь'
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        return super().form_valid(form)
 
 
 def login(request):

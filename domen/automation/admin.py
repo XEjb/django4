@@ -23,7 +23,7 @@ class CssFilter(admin.SimpleListFilter):
 
 @admin.register(Automation)
 class AutomationAdmin(admin.ModelAdmin):
-    fields = ['title', 'slug', 'content', 'photo', 'post_photo', 'cat', 'husband', 'tags']
+    fields = ['title', 'slug', 'content', 'photo', 'post_photo', 'cat', 'tags']
     # exclude = ['tags', 'is_published']
     readonly_fields = ['post_photo']
     prepopulated_fields = {'slug': ('title',)}
